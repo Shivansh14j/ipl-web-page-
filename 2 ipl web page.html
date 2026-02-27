@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IPL Teams 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;600;700&family=Nunito:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #04080f;
+    --gold: #f0b429;
+    --gold2: #ffda6a;
+    --surface: rgba(255,255,255,0.04);
+    --border: rgba(255,255,255,0.08);
+    --text: #e8eaf0;
+    --muted: #5a6880;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── BACKGROUND ── */
+  .bg-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 100% 60% at 50% -5%, rgba(240,180,41,0.1) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 40% at 0% 60%, rgba(0,60,180,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse 50% 40% at 100% 40%, rgba(180,0,60,0.06) 0%, transparent 50%);
+  }
+
+  .bg-grid {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 80px 20px 50px;
+  }
+
+  .season-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid rgba(240,180,41,0.3);
+    padding: 6px 20px;
+    border-radius: 50px;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: rise 0.7s ease forwards 0.1s;
+    background: rgba(240,180,41,0.05);
+  }
+
+  .season-tag::before, .season-tag::after {
+    content: '◆';
+    font-size: 6px;
+  }
+
+  h1 {
+    font-family: 'Teko', sans-serif;
+    font-size: clamp(70px, 15vw, 150px);
+    font-weight: 700;
+    line-height: 0.85;
+    letter-spacing: -2px;
+    opacity: 0;
+    animation: rise 0.8s ease forwards 0.3s;
+  }
+
+  h1 .line1 {
+    display: block;
+    color: #fff;
+  }
+
+  h1 .line2 {
+    display: block;
+    -webkit-text-stroke: 2px var(--gold);
+    color: transparent;
+  }
+
+  .hero-sub {
+    font-size: 14px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 18px;
+    opacity: 0;
+    animation: rise 0.8s ease forwards 0.5s;
+  }
+
+  .hero-divider {
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 22px auto 0;
+    opacity: 0;
+    animation: rise 0.8s ease forwards 0.65s;
+  }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    max-width: 560px;
+    margin: 0 auto 60px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--surface);
+    opacity: 0;
+    animation: rise 0.7s ease forwards 0.75s;
+  }
+
+  .stat-item {
+    flex: 1;
+    padding: 16px 10px;
+    text-align: center;
+    border-right: 1px solid var(--border);
+  }
+
+  .stat-item:last-child { border-right: none; }
+
+  .stat-num {
+    font-family: 'Teko', sans-serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .stat-lbl {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+
+  /* ── GRID ── */
+  .teams-container {
+    position: relative;
+    z-index: 10;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 18px;
+    max-width: 1260px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  /* ── CARD ── */
+  .team-card {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px 20px 22px;
+    text-align: center;
+    cursor: pointer;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(24px);
+    animation: cardPop 0.6s cubic-bezier(0.22,1,0.36,1) forwards;
+    transition: transform 0.32s cubic-bezier(0.22,1,0.36,1),
+                border-color 0.3s ease,
+                box-shadow 0.3s ease;
+  }
+
+  .team-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: rgba(255,255,255,0.18);
+    box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+  }
+
+  .team-card:hover .card-shine {
+    opacity: 1;
+    transform: translateX(100%);
+  }
+
+  .team-card:hover .logo-ring {
+    transform: scale(1.06);
+    box-shadow: 0 0 30px var(--team-color, rgba(240,180,41,0.4));
+  }
+
+  /* shine sweep */
+  .card-shine {
+    position: absolute;
+    top: 0; left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.06) 50%, transparent 60%);
+    transition: transform 0.55s ease, opacity 0.1s;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* top color band */
+  .card-band {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--team-color, var(--gold));
+    border-radius: 20px 20px 0 0;
+  }
+
+  /* bg blob */
+  .card-blob {
+    position: absolute;
+    top: -30px; left: 50%;
+    transform: translateX(-50%);
+    width: 140px;
+    height: 140px;
+    background: var(--team-color, rgba(240,180,41,0.15));
+    border-radius: 50%;
+    filter: blur(40px);
+    opacity: 0.25;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  .team-card:hover .card-blob { opacity: 0.45; }
+
+  /* logo */
+  .logo-ring {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    overflow: hidden;
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+    position: relative;
+    z-index: 2;
+  }
+
+  .logo-ring img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+    transition: transform 0.35s ease;
+  }
+
+  .team-card:hover .logo-ring img {
+    transform: scale(1.12) rotate(-3deg);
+  }
+
+  .team-name {
+    font-family: 'Teko', sans-serif;
+    font-size: 21px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    line-height: 1.1;
+    color: #fff;
+    position: relative;
+    z-index: 2;
+    margin-bottom: 6px;
+  }
+
+  .team-abbr-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--team-color, var(--gold));
+    background: rgba(255,255,255,0.05);
+    border: 1px solid currentColor;
+    border-radius: 4px;
+    padding: 2px 10px;
+    margin-bottom: 14px;
+    position: relative;
+    z-index: 2;
+    opacity: 0.85;
+  }
+
+  .card-divider {
+    width: 100%;
+    height: 1px;
+    background: var(--border);
+    margin-bottom: 14px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .card-meta {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    z-index: 2;
+  }
+
+  .meta-item {
+    text-align: center;
+    flex: 1;
+  }
+
+  .meta-val {
+    font-family: 'Teko', sans-serif;
+    font-size: 18px;
+    color: var(--team-color, var(--gold));
+    line-height: 1;
+  }
+
+  .meta-key {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .meta-sep {
+    width: 1px;
+    background: var(--border);
+    align-self: stretch;
+    margin: 2px 0;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 28px 20px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  footer span {
+    color: var(--gold);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes cardPop {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-layer"></div>
+<div class="bg-grid"></div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="season-tag">Indian Premier League</div>
+  <h1>
+    <span class="line1">IPL</span>
+    <span class="line2">2026</span>
+  </h1>
+  <p class="hero-sub">10 Teams · 74 Matches · One Trophy</p>
+  <div class="hero-divider"></div>
+</div>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <div class="stat-num">10</div>
+    <div class="stat-lbl">Teams</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">74</div>
+    <div class="stat-lbl">Matches</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">19</div>
+    <div class="stat-num" style="font-size:14px;color:var(--muted)">yrs</div>
+    <div class="stat-lbl">of IPL</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">🏆</div>
+    <div class="stat-lbl">Winner TBD</div>
+  </div>
+</div>
+
+<!-- TEAM CARDS -->
+<div class="teams-container">
+
+  <!-- CSK -->
+  <div class="team-card" style="--team-color:#F5CD00; animation-delay:0.05s;">
+    <div class="card-band"></div>
+    <div class="card-blob"></div>
+    <div class="card-shine"></div>
+    <div class="logo-ring">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTG8MRZn2qFzNBkqxlJGRPG05V2ms-lMyMdgw&s" alt="CSK Logo">
+    </div>
+    <div class="team-name">Chennai Super Kings</div>
+    <div class="team-abbr-badge">CSK</div>
+    <div class="card-divider"></div>
+    <div class="card-meta">
+      <div class="meta-item"><div class="meta-val">5</div><div class="meta-key">Titles</div></div>
+      <div class="meta-sep"></div>
+      <div class="meta-item"><div class="meta-val">Chennai</div><div class="meta-key">Home</div></div>
+    </div>
+  </div>
+
+  <!-- MI -->
+  <div class="team-card" style="--team-color:#005DAA; animation-delay:0.10s;">
+    <div class="card-band"></div>
+    <div class="card-blob"></div>
+    <div class="card-shine"></div>
+    <div class="logo-ring">
+      <img src="https://upload.wikimedia.org/wikipedia/en/c/cd/Mumbai_Indians_Logo.svg" alt="MI Logo">
+    </div>
+    <div class="team-name">Mumbai Indians</div>
+    <div class="team-abbr-badge">MI</div>
+    <div class="card-divider"></div>
+    <div class="card-meta">
+      <div class="meta-item"><div class="meta-val">5</div><div class="meta-key">Titles</div></div>
+      <div class="meta-sep"></div>
+      <div class="meta-item"><div class="meta-val">Mumbai</div><div class="meta-key">Home</div></div>
+    </div>
+  </div>
+
+  <!-- RCB -->
+  <div class="team-card" style="--team-color:#EC1C24; animation-delay:0.15s;">
+    <div class="card-band"></div>
+    <div class="card-blob"></div>
+    <div class="card-shine"></div>
+    <div class="logo-ring">
+      <img src="https://1000logos.net/wp-content/uploads/2024/03/Royal-Challengers-Bengaluru-Logo.jpg" alt="RCB Logo">
+    </div>
+    <div class="team-name">Royal Challengers Bangalore</div>
+    <div class="team-abbr-badge">RCB</div>
+    <div class="card-divider"></div>
+    <div class="card-meta">
+      <div class="meta-item"><div class="meta-val">0</div><div class="meta-key">Titles</div></div>
+      <div class="meta-sep"></div>
+      <div class="meta-item"><div class="meta-val">Bengaluru</div><div class="meta-key">Home</div></div>
+    </div>
+  </div>
+
+  <!-- KKR -->
+  <div class="team-card" style="--team-color:#6B2D8B; animation-delay:0.20s;">
+    <div class="card-band"></div>
+    <div class="card-blob"></div>
+    <div class="card-shine"></div>
+    <div class="logo-ring">
+      <img src="https://i.pinimg.com/736x/13/68/3c/13683c135faf798e8b30954673c3b100.jpg" alt="KKR Logo">
+    </div>
+    <div class="team-name">Kolkata Knight Riders</div>
+    <div class="team-abbr-badge">KKR</div>
+    <div class="card-divider"></div>
+    <div class="card-meta">
+      <div class="meta-item"><div class="meta-val">3</div><div class="meta-key">Titles</div></div>
+      <div class="meta-sep"></div>
+      <div class="meta-item"><div class="meta-val">Kolkata</div><div class="meta-key">Home</div></div>
+    </div>
+  </div>
+
+  <!-- DC -->
+  <div class="team-card" style="--team-color:#004C97; animation-delay:0.25s;">
+    <div class="card-band"></div>
+    <div class="card-blob"></div>
+    <div class="card-shine"></div>
+    <div class="logo-ring">
+      <img src="https://media.crictracker.com/media/attachments/2022/02/Delhi-Capitals-logo-1.jpg" alt="DC Logo">
+    </div>
+    <div class="team-name">Delhi Capitals</div>
+    <div class="team-abbr-badge">DC</div>
+    <div class="card-divider"></div>
+    <div class="card-meta">
+      <div class="meta-item"><div class="meta-val">0</div><div class="meta-key">Titles</div></div>
+      <div class="meta-sep"></div>
+      <div class="meta-item"><div class="meta-val">Delhi</div><div class="meta-key">Home</div></div>
+    </div>
+  </div>
+
+  <!-- RR -->
+  <div class="team-card" style="--team-color:#E91E8C; animation-delay:0.30s;">
+    <div class="card-band"></div>
+    <div class="card-blob"></div>
+    <div class="card-shine"></div>
+    <div class="logo-ring">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRtM_NGnbsJ6bWZVeE14qQG8fZ2RR2CTGdd4w&s" alt="RR Logo">
+    </div>
+    <div class="team-name">Rajasthan Royals</div>
+    <div class="team-abbr-badge">RR</div>
+    <div class="card-divider"></div>
+    <div class="card-meta">
+      <div class="meta-item"><div class="meta-val">1</div><div class="meta-key">Titles</div></div>
+      <div class="meta-sep"></div>
+      <div class="meta-item"><div class="meta-val">Jaipur</div><div class="meta-key">Home</div></div>
+    </div>
+  </div>
+
+  <!-- SRH -->
+  <div class="team-card" style="--team-color:#FF6B00; animation-delay:0.35s;">
+    <div class="card-band"></div>
+    <div class="card-blob"></div>
+    <div class="card-shine"></div>
+    <div class="logo-ring">
+      <img src="https://i.pinimg.com/736x/b7/7d/f5/b77df59b1a5f0f209b94a0148ddb02d5.jpg" alt="SRH Logo">
+    </div>
+    <div class="team-name">Sunrisers Hyderabad</div>
+    <div class="team-abbr-badge">SRH</div>
+    <div class="card-divider"></div>
+    <div class="card-meta">
+      <div class="meta-item"><div class="meta-val">1</div><div class="meta-key">Titles</div></div>
+      <div class="meta-sep"></div>
+      <div class="meta-item"><div class="meta-val">Hyderabad</div><div class="meta-key">Home</div></div>
+    </div>
+  </div>
+
+  <!-- PBKS -->
+  <div class="team-card" style="--team-color:#ED1B24; animation-delay:0.40s;">
+    <div class="card-band"></div>
+    <div class="card-blob"></div>
+    <div class="card-shine"></div>
+    <div class="logo-ring">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzZOHS3UhaUCt6AjLwj-LUvjwkbyXdO9hdEQ&s" alt="PBKS Logo">
+    </div>
+    <div class="team-name">Punjab Kings</div>
+    <div class="team-abbr-badge">PBKS</div>
+    <div class="card-divider"></div>
+    <div class="card-meta">
+      <div class="meta-item"><div class="meta-val">0</div><div class="meta-key">Titles</div></div>
+      <div class="meta-sep"></div>
+      <div class="meta-item"><div class="meta-val">Mohali</div><div class="meta-key">Home</div></div>
+    </div>
+  </div>
+
+  <!-- GT -->
+  <div class="team-card" style="--team-color:#1B5E8E; animation-delay:0.45s;">
+    <div class="card-band"></div>
+    <div class="card-blob"></div>
+    <div class="card-shine"></div>
+    <div class="logo-ring">
+      <img src="https://imgk.timesnownews.com/story/Gujarat_Titans_logo.png?tr=w-1200,h-900" alt="GT Logo">
+    </div>
+    <div class="team-name">Gujarat Titans</div>
+    <div class="team-abbr-badge">GT</div>
+    <div class="card-divider"></div>
+    <div class="card-meta">
+      <div class="meta-item"><div class="meta-val">2</div><div class="meta-key">Titles</div></div>
+      <div class="meta-sep"></div>
+      <div class="meta-item"><div class="meta-val">Ahmedabad</div><div class="meta-key">Home</div></div>
+    </div>
+  </div>
+
+  <!-- LSG -->
+  <div class="team-card" style="--team-color:#00ADEF; animation-delay:0.50s;">
+    <div class="card-band"></div>
+    <div class="card-blob"></div>
+    <div class="card-shine"></div>
+    <div class="logo-ring">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdURdkjiGCSzciELc10rNcp3IqZh4lCEl4cQ&s" alt="LSG Logo">
+    </div>
+    <div class="team-name">Lucknow Super Giants</div>
+    <div class="team-abbr-badge">LSG</div>
+    <div class="card-divider"></div>
+    <div class="card-meta">
+      <div class="meta-item"><div class="meta-val">0</div><div class="meta-key">Titles</div></div>
+      <div class="meta-sep"></div>
+      <div class="meta-item"><div class="meta-val">Lucknow</div><div class="meta-key">Home</div></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  © 2026 IPL Fan Page &nbsp;|&nbsp; Created by <span>Anurag Sharma</span> &nbsp;|&nbsp; 🏏 All Rights Reserved
+</footer>
+
+</body>
+</html>
